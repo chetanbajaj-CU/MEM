@@ -1,0 +1,8 @@
+{
+  "name": "MEM - Mind Energy Motion",
+  "description": "An all-in-one fitness and wellness platform.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

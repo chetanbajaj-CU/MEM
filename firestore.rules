@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} { 
+      allow read, write: if false; 
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == "chetanbajaj9a22@gmail.com";
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    match /adminMessages/{messageId} {
+      allow read: if isSignedIn();
+      allow create, delete: if isSignedIn() && isAdmin();
+      allow update: if isSignedIn() && (isAdmin() || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readBy']));
+    }
+
+    match /habits/{habitId} {
+      allow get: if isSignedIn() && (habitId.split('_')[0] == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && request.auth.uid != null;
+      allow write: if isSignedIn() && (habitId.split('_')[0] == request.auth.uid || isAdmin());
+    }
+
+    match /workouts/{workoutId} {
+      allow get: if isSignedIn() && (workoutId.split('_')[0] == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && request.auth.uid != null;
+      allow write: if isSignedIn() && (workoutId.split('_')[0] == request.auth.uid || isAdmin());
+    }
+
+    match /nutrition/{nutritionId} {
+      allow get: if isSignedIn() && (nutritionId.split('_')[0] == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && request.auth.uid != null;
+      allow write: if isSignedIn() && (nutritionId.split('_')[0] == request.auth.uid || isAdmin());
+    }
+
+    match /programs/{programId} {
+      allow get: if isSignedIn() && (programId.split('_')[0] == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && request.auth.uid != null;
+      allow write: if isSignedIn() && (programId.split('_')[0] == request.auth.uid || isAdmin());
+    }
+
+    match /dailyData/{dataId} {
+      allow get: if isSignedIn() && (dataId.split('_')[0] == request.auth.uid || resource.data.userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && (dataId.split('_')[0] == request.auth.uid || request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isSignedIn() && (dataId.split('_')[0] == request.auth.uid || resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    match /userStats/{userId} {
+      allow read: if isSignedIn() && (userId == request.auth.uid || resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if isSignedIn() && (userId == request.auth.uid || request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isSignedIn() && (userId == request.auth.uid || resource.data.userId == request.auth.uid || isAdmin());
+    }
+  }
+}

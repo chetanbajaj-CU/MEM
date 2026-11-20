@@ -1,0 +1,89 @@
+{
+  "project_name": "MEM",
+  "collections": [
+    {
+      "name": "users",
+      "description": "User profiles, contact info, and settings",
+      "document_id": "uid",
+      "fields": [
+        { "name": "uid", "type": "string", "description": "User ID matching Auth UID" },
+        { "name": "email", "type": "string", "description": "User email address" },
+        { "name": "phoneNumber", "type": "string", "description": "User contact phone number" },
+        { "name": "displayName", "type": "string", "description": "User's display name" },
+        { "name": "role", "type": "string", "description": "User role: member or admin" },
+        { "name": "createdAt", "type": "timestamp", "description": "Account creation time" },
+        { "name": "lastActive", "type": "timestamp", "description": "Last activity timestamp" }
+      ],
+      "security_rules": {
+        "read": "request.auth != null",
+        "write": "request.auth != null && request.auth.uid == uid"
+      }
+    },
+    {
+      "name": "adminMessages",
+      "description": "Messages and broadcasts sent by admin under the name MEM Fitness",
+      "document_id": "auto",
+      "fields": [
+        { "name": "id", "type": "string", "description": "Message ID" },
+        { "name": "senderName", "type": "string", "description": "Sender name: MEM Fitness" },
+        { "name": "adminEmail", "type": "string", "description": "Admin sender email address" },
+        { "name": "targetType", "type": "string", "description": "all or specific" },
+        { "name": "recipientEmail", "type": "string", "description": "Target email" },
+        { "name": "recipientPhone", "type": "string", "description": "Target phone" },
+        { "name": "channel", "type": "string", "description": "email, phone, in-app, or all" },
+        { "name": "subject", "type": "string", "description": "Message subject" },
+        { "name": "content", "type": "string", "description": "Message body" },
+        { "name": "createdAt", "type": "string", "description": "Dispatch timestamp" },
+        { "name": "status", "type": "string", "description": "sent or delivered" },
+        { "name": "readBy", "type": "array", "description": "List of user UIDs who read the message" }
+      ],
+      "security_rules": {
+        "read": "request.auth != null",
+        "write": "request.auth != null"
+      }
+    },
+    {
+      "name": "habits",
+      "description": "Daily habit tracking",
+      "document_id": "auto",
+      "fields": [
+        { "name": "userId", "type": "string", "description": "Owner of the habit log" },
+        { "name": "date", "type": "string", "description": "Local date string YYYY-MM-DD" },
+        { "name": "habits", "type": "array", "description": "Array of habit objects" }
+      ],
+      "security_rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    },
+    {
+      "name": "workouts",
+      "description": "User's custom workouts",
+      "document_id": "auto",
+      "fields": [
+        { "name": "userId", "type": "string", "description": "Owner of the workout" },
+        { "name": "date", "type": "string", "description": "Date of the workout" },
+        { "name": "workoutData", "type": "map", "description": "Workout data" }
+      ],
+      "security_rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    },
+    {
+      "name": "nutrition",
+      "description": "User's nutrition logs",
+      "document_id": "auto",
+      "fields": [
+        { "name": "userId", "type": "string", "description": "Owner of the log" },
+        { "name": "date", "type": "string", "description": "Date of the log" },
+        { "name": "meals", "type": "array", "description": "Array of meals" },
+        { "name": "summary", "type": "map", "description": "Daily totals" }
+      ],
+      "security_rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    }
+  ]
+}
